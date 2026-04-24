@@ -1,4 +1,4 @@
-﻿namespace iQuest.VendingMachine.Authentication
+﻿    namespace iQuest.VendingMachine.Authentication
 {
     internal class AuthenticationService
     {

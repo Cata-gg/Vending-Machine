@@ -19,9 +19,11 @@ namespace iQuest.VendingMachine
             LoginView loginView = new LoginView();
 
             AuthenticationService authenticationService = new AuthenticationService();
+            ProductRepository productRepository = new ProductRepository();
 
             List<IUseCase> useCases = new List<IUseCase>
-            {
+            {   
+                new DisplayUseCase(mainView, productRepository),
                 new LoginUseCase(authenticationService, loginView),
                 new LogoutUseCase(authenticationService),
             };
