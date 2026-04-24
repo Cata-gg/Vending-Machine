@@ -1,6 +1,7 @@
-﻿using System;
+﻿using iQuest.VendingMachine.PresentationLayer;
+using System;
 using System.Collections.Generic;
-using iQuest.VendingMachine.PresentationLayer;
+using System.Linq;
 
 namespace iQuest.VendingMachine
 {
@@ -18,6 +19,13 @@ namespace iQuest.VendingMachine
         public void Run()
         {
             mainView.DisplayApplicationHeader();
+
+            int choice = mainView.ChooseStartOption();
+            if (choice == 2)
+            {
+                IUseCase loginUseCase = useCases.FirstOrDefault(u => u.Name == "login");
+                loginUseCase?.Execute();
+            }
 
             while (true)
             {

@@ -9,7 +9,11 @@ namespace iQuest.VendingMachine.PresentationLayer
             ApplicationHeaderControl applicationHeaderControl = new ApplicationHeaderControl();
             applicationHeaderControl.Display();
         }
-
+        public int ChooseStartOption()
+        {
+            StartMenuControl startMenuControl = new StartMenuControl();
+            return startMenuControl.Display();
+        }
         public IUseCase ChooseCommand(IEnumerable<IUseCase> useCases)
         {
             CommandSelectorControl commandSelectorControl = new CommandSelectorControl
