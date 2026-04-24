@@ -14,8 +14,9 @@ namespace iQuest.VendingMachine
         }
 
         private static VendingMachineApplication BuildApplication()
-        {
+        {   
             MainView mainView = new MainView();
+            ShelfView shelfView = new ShelfView();
             LoginView loginView = new LoginView();
 
             AuthenticationService authenticationService = new AuthenticationService();
@@ -23,7 +24,7 @@ namespace iQuest.VendingMachine
 
             List<IUseCase> useCases = new List<IUseCase>
             {   
-                new DisplayUseCase(mainView, productRepository),
+                new LookUseCase(shelfView, productRepository),
                 new LoginUseCase(authenticationService, loginView),
                 new LogoutUseCase(authenticationService),
             };
