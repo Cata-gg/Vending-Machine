@@ -26,8 +26,8 @@ namespace iQuest.VendingMachine
             Payment payment = new Payment();
 
             List<IUseCase> useCases = new List<IUseCase>
-            {
-                new LookUseCase(shelfView, productRepository),
+            {   
+                new DisplayUseCase(mainView, productRepository),
                 new LoginUseCase(authenticationService, loginView),
                 new LogoutUseCase(authenticationService),
                 new BuyUseCase(buyView, productRepository, payment, authenticationService),
