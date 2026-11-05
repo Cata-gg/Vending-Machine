@@ -21,7 +21,14 @@ namespace iQuest.VendingMachine.PresentationLayer
 
             foreach (var product in products)
             {
-                Console.WriteLine($"[{product.Id}] {product.Name,-20} ${product.Price:F2}   ({product.Quantity} left)");
+                if (product.Quantity == 0)
+                {
+                    Console.WriteLine($"[{product.ColumnId}] {product.Name,-20} ${product.Price:F2}   (Out of stock)");
+                }
+                else
+                {
+                    Console.WriteLine($"[{product.ColumnId}] {product.Name,-20} ${product.Price:F2}   ({product.Quantity} left)");
+                }
             }
 
             Console.WriteLine(new string('-', 79));
