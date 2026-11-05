@@ -27,7 +27,7 @@ namespace iQuest.VendingMachine
 
             List<IUseCase> useCases = new List<IUseCase>
             {   
-                new DisplayUseCase(mainView, productRepository),
+                new LookUseCase(shelfView, productRepository),
                 new LoginUseCase(authenticationService, loginView),
                 new LogoutUseCase(authenticationService),
                 new BuyUseCase(buyView, productRepository, payment, authenticationService),
