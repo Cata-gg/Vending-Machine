@@ -69,3 +69,18 @@ x86/
 
 # Publish Web Output
 *.[Pp]ublish.xml
+
+# Code Coverage
+
+# Old coverage reports
+/CoverageReport/
+/CoverageUseCases/
+/coverage.microsoft.xml
+
+# Temporary coverage files
+*.coverage
+*.coveragexml
+
+# Keep final Coverlet report
+!/CoverageCoverlet/
+!/VendingMachine.Test/coverage.cobertura.xml

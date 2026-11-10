@@ -5,7 +5,7 @@ using System.Text;
 
 namespace iQuest.VendingMachine
 {
-    internal class ProductRepository
+    internal class ProductRepository : IProductRepository
     {
         private readonly List<Product> products = new List<Product>
         {

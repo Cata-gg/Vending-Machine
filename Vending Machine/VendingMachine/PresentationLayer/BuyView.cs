@@ -4,7 +4,7 @@ using System.Text;
 
 namespace iQuest.VendingMachine.PresentationLayer
 {
-    internal class BuyView : DisplayBase
+    internal class BuyView : DisplayBase , IBuyView
     {
         public int RequestProduct()
         {
