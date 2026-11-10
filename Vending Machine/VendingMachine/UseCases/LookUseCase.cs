@@ -16,8 +16,8 @@ namespace iQuest.VendingMachine.UseCases
 
         public LookUseCase(ShelfView shelfView, ProductRepository productRepository)
         {
-            this.shelfView = shelfView;
-            this.productRepository = productRepository;
+            this.shelfView = shelfView ?? throw new ArgumentNullException(nameof(shelfView));
+            this.productRepository = productRepository ?? throw new ArgumentException(nameof(productRepository));
         }
 
         public void Execute()

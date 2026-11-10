@@ -15,5 +15,18 @@ namespace iQuest.VendingMachine
         };
 
         public IEnumerable<Product> GetAll() => products;
+
+        public Product GetByColumn(int columnId)
+        {
+            foreach (Product product in products)
+            {
+                if (product.ColumnId == columnId)
+                {
+                    return product;
+                }
+            }
+
+            throw new InvalidColumnException();
+        }
     }
 }
