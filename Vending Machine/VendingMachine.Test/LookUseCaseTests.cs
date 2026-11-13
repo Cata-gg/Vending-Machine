@@ -1,3 +1,4 @@
+
 using iQuest.VendingMachine;
 using iQuest.VendingMachine.PresentationLayer;
 using iQuest.VendingMachine.UseCases;
@@ -11,12 +12,19 @@ namespace VendingMachine.Test
     [TestClass]
     public class LookUseCaseTests
     {
-        [TestMethod]
-        public void HavingLookUseCase_WhenCheckingCanExecute_ThenReturnsTrue()
-        {
-            Mock<IShelfView> shelfViewMock = new Mock<IShelfView>();
-            Mock<IProductRepository> repositoryMock = new Mock<IProductRepository>();
+        private Mock<IShelfView> shelfViewMock;
+        private Mock<IProductRepository> repositoryMock;
 
+        [TestInitialize]
+        public void Setup()
+        {
+            shelfViewMock = new Mock<IShelfView>();
+            repositoryMock = new Mock<IProductRepository>();
+        }
+
+        [TestMethod]
+        public void HavingLookUseCase_WhenLook_ThenReturnsTrue()
+        {
             LookUseCase useCase = new LookUseCase(
                 shelfViewMock.Object,
                 repositoryMock.Object
@@ -26,13 +34,46 @@ namespace VendingMachine.Test
 
             Assert.IsTrue(result);
         }
-        
-        [TestMethod]
-        public void HavingProducts_WhenExecutingLook_ThenProductsAreDisplayed()
-        {
-            Mock<IShelfView> shelfViewMock = new Mock<IShelfView>();
-            Mock<IProductRepository> repositoryMock = new Mock<IProductRepository>();
 
+        [TestMethod]
+        public void HavingProducts_WhenLookingAtProducts_ThenProductsAreDisplayed()
+        {
+            List<Product> products = new List<Product>
+            {
+                new Product
+                {
+                    ColumnId = 1,
+                    Name = "Cola",
+                    Price = 2.5,
+                    Quantity = 5
+                }
+            };
+
+            repositoryMock
+                .Setup(r => r.GetAll())
+                .Returns(products);
+
+            LookUseCase useCase = new LookUseCase(
+                shelfViewMock.Object,
+                repositoryMock.Object
+            );
+
+            useCase.Execute();
+
+            repositoryMock.Verify(
+                r => r.GetAll(),
+                Times.Once()
+            );
+
+            shelfViewMock.Verify(
+                s => s.DisplayProducts(products),
+                Times.Once()
+            );
+        }
+
+        [TestMethod]
+        public void HavingEmptyRepository_WhenLookingAtProducts_ThenDisplaysEmptyList()
+        {
             List<Product> products = new List<Product>();
 
             repositoryMock
@@ -46,16 +87,56 @@ namespace VendingMachine.Test
 
             useCase.Execute();
 
+            repositoryMock.Verify(
+                r => r.GetAll(),
+                Times.Once()
+            );
+
             shelfViewMock.Verify(
                 s => s.DisplayProducts(products),
                 Times.Once()
             );
         }
+
+        [TestMethod]
+        public void HavingOutOfStockProduct_WhenLookingAtProducts_ThenDisplaysProduct()
+        {
+            List<Product> products = new List<Product>
+            {
+                new Product
+                {
+                    ColumnId = 1,
+                    Name = "Cola",
+                    Price = 2.5,
+                    Quantity = 0
+                }
+            };
+
+            repositoryMock
+                .Setup(r => r.GetAll())
+                .Returns(products);
+
+            LookUseCase useCase = new LookUseCase(
+                shelfViewMock.Object,
+                repositoryMock.Object
+            );
+
+            useCase.Execute();
+
+            repositoryMock.Verify(
+                r => r.GetAll(),
+                Times.Once()
+            );
+
+            shelfViewMock.Verify(
+                s => s.DisplayProducts(products),
+                Times.Once()
+            );
+        }
+
         [TestMethod]
         public void HavingNullShelfView_WhenCreatingLookUseCase_ThenThrowsArgumentNullException()
         {
-            Mock<IProductRepository> repositoryMock = new Mock<IProductRepository>();
-
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 LookUseCase useCase = new LookUseCase(
@@ -64,12 +145,11 @@ namespace VendingMachine.Test
                 );
             });
         }
-        [TestMethod]
-        public void HavingNullRepository_WhenCreatingLookUseCase_ThenThrowsArgumentException()
-        {
-            Mock<IShelfView> shelfViewMock = new Mock<IShelfView>();
 
-            Assert.ThrowsException<ArgumentException>(() =>
+        [TestMethod]
+        public void HavingNullRepository_WhenCreatingLookUseCase_ThenThrowsArgumentNullException()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 LookUseCase useCase = new LookUseCase(
                     shelfViewMock.Object,
@@ -77,13 +157,10 @@ namespace VendingMachine.Test
                 );
             });
         }
-        [TestMethod]
-        public void HavingLookUseCase_WhenCheckingName_ThenReturnsLook()
-        {
-            Mock<IShelfView> shelfViewMock = new Mock<IShelfView>();
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
 
+        [TestMethod]
+        public void HavingLookUseCase_WhenGettingName_ThenReturnsLook()
+        {
             LookUseCase useCase = new LookUseCase(
                 shelfViewMock.Object,
                 repositoryMock.Object
@@ -93,13 +170,10 @@ namespace VendingMachine.Test
 
             Assert.AreEqual("look", result);
         }
-        [TestMethod]
-        public void HavingLookUseCase_WhenCheckingDescription_ThenReturnsCorrectDescription()
-        {
-            Mock<IShelfView> shelfViewMock = new Mock<IShelfView>();
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
 
+        [TestMethod]
+        public void HavingLookUseCase_WhenGettingDescription_ThenReturnsCorrectDescription()
+        {
             LookUseCase useCase = new LookUseCase(
                 shelfViewMock.Object,
                 repositoryMock.Object

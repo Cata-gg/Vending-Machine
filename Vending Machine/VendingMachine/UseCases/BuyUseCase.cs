@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
+using System;
 using iQuest.VendingMachine.PresentationLayer;
 using iQuest.VendingMachine.Authentication;
 
@@ -31,15 +29,16 @@ namespace iQuest.VendingMachine.UseCases
 
         public void Execute()
         {
-            if (authenticationService.IsUserAuthenticated)
-            {
-                throw new InvalidOperationException("Administrators cannot buy products.");
-            }
             try
             {
                 int column = buyView.RequestProduct();
 
                 Product product = productRepository.GetByColumn(column);
+
+                if (product == null)
+                {
+                    throw new InvalidColumnException();
+                }
 
                 if (product.Quantity == 0)
                 {
@@ -54,15 +53,15 @@ namespace iQuest.VendingMachine.UseCases
             }
             catch (CancelException ex)
             {
-                Console.WriteLine(ex.Message);
+                buyView.ShowError(ex.Message);
             }
             catch (InvalidColumnException ex)
             {
-                Console.WriteLine(ex.Message);
+                buyView.ShowError(ex.Message);
             }
             catch (InsufficientStockException ex)
             {
-                Console.WriteLine(ex.Message);
+                buyView.ShowError(ex.Message);
             }
         }
     }

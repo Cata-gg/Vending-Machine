@@ -11,19 +11,23 @@ namespace VendingMachine.Test
     [TestClass]
     public class BuyUseCaseTests
     {
-        [TestMethod]
-        public void HavingNotAuthenticatedUser_WhenCheckingCanExecute_ThenReturnsTrue()
+        private Mock<IBuyView> buyViewMock;
+        private Mock<IProductRepository> repositoryMock;
+        private Mock<IPayment> paymentMock;
+        private Mock<IAuthenticationService> authenticationMock;
+
+        [TestInitialize]
+        public void Setup()
         {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
+            buyViewMock = new Mock<IBuyView>();
+            repositoryMock = new Mock<IProductRepository>();
+            paymentMock = new Mock<IPayment>();
+            authenticationMock = new Mock<IAuthenticationService>();
+        }
 
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
+        [TestMethod]
+        public void HavingNotAuthenticatedUser_WhenTryingToBuy_ThenReturnsTrue()
+        {
             authenticationMock
                 .Setup(x => x.IsUserAuthenticated)
                 .Returns(false);
@@ -39,19 +43,10 @@ namespace VendingMachine.Test
 
             Assert.IsTrue(result);
         }
+
         [TestMethod]
-        public void HavingAuthenticatedUser_WhenCheckingCanExecute_ThenReturnsFalse()
+        public void HavingAuthenticatedUser_WhenTryingToBuy_ThenReturnsFalse()
         {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             authenticationMock
                 .Setup(x => x.IsUserAuthenticated)
                 .Returns(true);
@@ -67,19 +62,10 @@ namespace VendingMachine.Test
 
             Assert.IsFalse(result);
         }
+
         [TestMethod]
-        public void HavingAvailableProduct_WhenExecutingBuy_ThenDispensesProduct()
+        public void HavingAvailableProduct_WhenBuyingProduct_ThenDispensesProduct()
         {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             Product product = new Product
             {
                 ColumnId = 1,
@@ -115,19 +101,10 @@ namespace VendingMachine.Test
                 Times.Once()
             );
         }
+
         [TestMethod]
-        public void HavingAvailableProduct_WhenExecutingBuy_ThenDecreasesQuantity()
+        public void HavingAvailableProduct_WhenBuyingProduct_ThenDecreasesQuantity()
         {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             Product product = new Product
             {
                 ColumnId = 1,
@@ -155,19 +132,10 @@ namespace VendingMachine.Test
 
             Assert.AreEqual(4, product.Quantity);
         }
+
         [TestMethod]
-        public void HavingInsufficientStock_WhenExecutingBuy_ThenDoesNotProcessPayment()
+        public void HavingInsufficientStock_WhenBuyingProduct_ThenDoesNotProcessPayment()
         {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             Product product = new Product
             {
                 ColumnId = 1,
@@ -193,6 +161,11 @@ namespace VendingMachine.Test
 
             useCase.Execute();
 
+            buyViewMock.Verify(
+                x => x.ShowError(It.Is<string>(message => !string.IsNullOrWhiteSpace(message))),
+                Times.Once()
+            );
+
             paymentMock.Verify(
                 x => x.Pay(It.IsAny<int>(), It.IsAny<float>()),
                 Times.Never()
@@ -205,19 +178,10 @@ namespace VendingMachine.Test
 
             Assert.AreEqual(0, product.Quantity);
         }
+
         [TestMethod]
-        public void HavingCancelledPurchase_WhenExecutingBuy_ThenDoesNotProcessPayment()
+        public void HavingCancelledPurchase_WhenCancellingPurchase_ThenDoesNotProcessPayment()
         {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             buyViewMock
                 .Setup(x => x.RequestProduct())
                 .Throws(new CancelException());
@@ -230,6 +194,11 @@ namespace VendingMachine.Test
             );
 
             useCase.Execute();
+
+            buyViewMock.Verify(
+                x => x.ShowError(It.Is<string>(message => !string.IsNullOrWhiteSpace(message))),
+                Times.Once()
+            );
 
             repositoryMock.Verify(
                 x => x.GetByColumn(It.IsAny<int>()),
@@ -246,19 +215,10 @@ namespace VendingMachine.Test
                 Times.Never()
             );
         }
+
         [TestMethod]
-        public void HavingInvalidColumn_WhenExecutingBuy_ThenDoesNotProcessPayment()
+        public void HavingInvalidColumn_WhenSelectingProduct_ThenDoesNotProcessPayment()
         {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             buyViewMock
                 .Setup(x => x.RequestProduct())
                 .Returns(99);
@@ -276,6 +236,11 @@ namespace VendingMachine.Test
 
             useCase.Execute();
 
+            buyViewMock.Verify(
+                x => x.ShowError(It.Is<string>(message => !string.IsNullOrWhiteSpace(message))),
+                Times.Once()
+            );
+
             repositoryMock.Verify(
                 x => x.GetByColumn(99),
                 Times.Once()
@@ -291,18 +256,10 @@ namespace VendingMachine.Test
                 Times.Never()
             );
         }
+
         [TestMethod]
         public void HavingNullBuyView_WhenCreatingBuyUseCase_ThenThrowsArgumentNullException()
         {
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock =
-                new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 BuyUseCase useCase = new BuyUseCase(
@@ -313,19 +270,10 @@ namespace VendingMachine.Test
                 );
             });
         }
+
         [TestMethod]
         public void HavingNullProductRepository_WhenCreatingBuyUseCase_ThenThrowsArgumentNullException()
         {
-
-            Mock<IBuyView> buyViewMock =
-                new Mock<IBuyView>();
-
-            Mock<IPayment> paymentMock =
-                new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 BuyUseCase useCase = new BuyUseCase(
@@ -336,18 +284,10 @@ namespace VendingMachine.Test
                 );
             });
         }
+
         [TestMethod]
         public void HavingNullPayment_WhenCreatingBuyUseCase_ThenThrowsArgumentNullException()
         {
-            Mock<IBuyView> buyViewMock =
-                new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 BuyUseCase useCase = new BuyUseCase(
@@ -358,19 +298,10 @@ namespace VendingMachine.Test
                 );
             });
         }
+
         [TestMethod]
         public void HavingNullAuthenticationService_WhenCreatingBuyUseCase_ThenThrowsArgumentNullException()
         {
- 
-            Mock<IBuyView> buyViewMock =
-                new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock =
-                new Mock<IPayment>();
-
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 BuyUseCase useCase = new BuyUseCase(
@@ -381,19 +312,10 @@ namespace VendingMachine.Test
                 );
             });
         }
+
         [TestMethod]
-        public void HavingFailedPayment_WhenExecutingBuy_ThenDoesNotDispenseProduct()
+        public void HavingFailedPayment_WhenBuyingProduct_ThenDoesNotDispenseProduct()
         {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             Product product = new Product
             {
                 ColumnId = 1,
@@ -430,53 +352,10 @@ namespace VendingMachine.Test
 
             Assert.AreEqual(5, product.Quantity);
         }
+
         [TestMethod]
-        public void HavingAuthenticatedAdmin_WhenExecutingBuy_ThenThrowsInvalidOperationException()
+        public void HavingBuyUseCase_WhenGettingName_ThenReturnsBuy()
         {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-
-            Mock<IProductRepository> repositoryMock =
-                new Mock<IProductRepository>();
-
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
-            authenticationMock
-                .Setup(x => x.IsUserAuthenticated)
-                .Returns(true);
-
-            BuyUseCase useCase = new BuyUseCase(
-                buyViewMock.Object,
-                repositoryMock.Object,
-                paymentMock.Object,
-                authenticationMock.Object
-            );
-
-            Assert.ThrowsException<InvalidOperationException>(
-                () => useCase.Execute()
-            );
-
-            buyViewMock.Verify(
-                x => x.RequestProduct(),
-                Times.Never()
-            );
-
-            paymentMock.Verify(
-                x => x.Pay(It.IsAny<int>(), It.IsAny<float>()),
-                Times.Never()
-            );
-        }
-        [TestMethod]
-        public void HavingBuyUseCase_WhenCheckingName_ThenReturnsBuy()
-        {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-            Mock<IProductRepository> repositoryMock = new Mock<IProductRepository>();
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             BuyUseCase useCase = new BuyUseCase(
                 buyViewMock.Object,
                 repositoryMock.Object,
@@ -488,15 +367,10 @@ namespace VendingMachine.Test
 
             Assert.AreEqual("buy", result);
         }
-        [TestMethod]
-        public void HavingBuyUseCase_WhenCheckingDescription_ThenReturnsCorrectDescription()
-        {
-            Mock<IBuyView> buyViewMock = new Mock<IBuyView>();
-            Mock<IProductRepository> repositoryMock = new Mock<IProductRepository>();
-            Mock<IPayment> paymentMock = new Mock<IPayment>();
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
 
+        [TestMethod]
+        public void HavingBuyUseCase_WhenGettingDescription_ThenReturnsCorrectDescription()
+        {
             BuyUseCase useCase = new BuyUseCase(
                 buyViewMock.Object,
                 repositoryMock.Object,
@@ -508,5 +382,47 @@ namespace VendingMachine.Test
 
             Assert.AreEqual("Buy a product", result);
         }
+
+        [TestMethod]
+        public void HavingNullProduct_WhenBuyingProduct_ThenDoesNotProcessPayment()
+        {
+            buyViewMock
+                .Setup(x => x.RequestProduct())
+                .Returns(99);
+
+            repositoryMock
+                .Setup(x => x.GetByColumn(99))
+                .Returns((Product)null);
+
+            BuyUseCase useCase = new BuyUseCase(
+                buyViewMock.Object,
+                repositoryMock.Object,
+                paymentMock.Object,
+                authenticationMock.Object
+            );
+
+            useCase.Execute();
+
+            buyViewMock.Verify(
+                x => x.ShowError(It.Is<string>(message => !string.IsNullOrWhiteSpace(message))),
+                Times.Once()
+            );
+
+            repositoryMock.Verify(
+                x => x.GetByColumn(99),
+                Times.Once()
+            );
+
+            paymentMock.Verify(
+                x => x.Pay(It.IsAny<int>(), It.IsAny<float>()),
+                Times.Never()
+            );
+
+            buyViewMock.Verify(
+                x => x.DispenseProduct(It.IsAny<string>()),
+                Times.Never()
+            );
+        }
+
     }
 }

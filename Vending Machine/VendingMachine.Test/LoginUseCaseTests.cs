@@ -1,4 +1,5 @@
-﻿using iQuest.VendingMachine.Authentication;
+﻿
+using iQuest.VendingMachine.Authentication;
 using iQuest.VendingMachine.PresentationLayer;
 using iQuest.VendingMachine.UseCases;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,15 +11,19 @@ namespace VendingMachine.Test
     [TestClass]
     public class LoginUseCaseTests
     {
-        [TestMethod]
-        public void HavingNotAuthenticatedUser_WhenCheckingCanExecute_ThenReturnsTrue()
+        private Mock<IAuthenticationService> authenticationMock;
+        private Mock<ILoginView> loginViewMock;
+
+        [TestInitialize]
+        public void Setup()
         {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
+            authenticationMock = new Mock<IAuthenticationService>();
+            loginViewMock = new Mock<ILoginView>();
+        }
 
-            Mock<ILoginView> loginViewMock =
-                new Mock<ILoginView>();
-
+        [TestMethod]
+        public void HavingNotAuthenticatedUser_WhenLogIn_ThenReturnsTrue()
+        {
             authenticationMock
                 .Setup(x => x.IsUserAuthenticated)
                 .Returns(false);
@@ -32,15 +37,10 @@ namespace VendingMachine.Test
 
             Assert.IsTrue(result);
         }
+
         [TestMethod]
-        public void HavingAuthenticatedUser_WhenCheckingCanExecute_ThenReturnsFalse()
+        public void HavingAuthenticatedUser_WhenLogIn_ThenReturnsFalse()
         {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
-            Mock<ILoginView> loginViewMock =
-                new Mock<ILoginView>();
-
             authenticationMock
                 .Setup(x => x.IsUserAuthenticated)
                 .Returns(true);
@@ -54,15 +54,10 @@ namespace VendingMachine.Test
 
             Assert.IsFalse(result);
         }
+
         [TestMethod]
-        public void HavingValidPassword_WhenExecutingLogin_ThenCallsAuthenticationService()
+        public void HavingValidPassword_WhenLogIn_ThenCallsAuthenticationService()
         {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
-            Mock<ILoginView> loginViewMock =
-                new Mock<ILoginView>();
-
             string password = "supercalifragilisticexpialidocious";
 
             loginViewMock
@@ -81,11 +76,10 @@ namespace VendingMachine.Test
                 Times.Once()
             );
         }
+
         [TestMethod]
         public void HavingNullAuthenticationService_WhenCreatingLoginUseCase_ThenThrowsArgumentNullException()
         {
-            Mock<ILoginView> loginViewMock = new Mock<ILoginView>();
-
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 LoginUseCase useCase = new LoginUseCase(
@@ -94,12 +88,10 @@ namespace VendingMachine.Test
                 );
             });
         }
+
         [TestMethod]
         public void HavingNullLoginView_WhenCreatingLoginUseCase_ThenThrowsArgumentNullException()
         {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
             Assert.ThrowsException<ArgumentNullException>(() =>
             {
                 LoginUseCase useCase = new LoginUseCase(
@@ -108,15 +100,10 @@ namespace VendingMachine.Test
                 );
             });
         }
+
         [TestMethod]
-        public void HavingLoginUseCase_WhenCheckingName_ThenReturnsLogin()
+        public void HavingLoginUseCase_WhenGettingName_ThenReturnsLogin()
         {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
-            Mock<ILoginView> loginViewMock =
-                new Mock<ILoginView>();
-
             LoginUseCase useCase = new LoginUseCase(
                 authenticationMock.Object,
                 loginViewMock.Object
@@ -126,15 +113,10 @@ namespace VendingMachine.Test
 
             Assert.AreEqual("login", result);
         }
+
         [TestMethod]
-        public void HavingLoginUseCase_WhenCheckingDescription_ThenReturnsCorrectDescription()
+        public void HavingLoginUseCase_WhenGettingDescription_ThenReturnsCorrectDescription()
         {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
-
-            Mock<ILoginView> loginViewMock =
-                new Mock<ILoginView>();
-
             LoginUseCase useCase = new LoginUseCase(
                 authenticationMock.Object,
                 loginViewMock.Object
@@ -144,8 +126,5 @@ namespace VendingMachine.Test
 
             Assert.AreEqual("Get access to administration section.", result);
         }
-
-
     }
-
 }

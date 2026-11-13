@@ -1,4 +1,5 @@
-﻿using iQuest.VendingMachine.Authentication;
+﻿
+using iQuest.VendingMachine.Authentication;
 using iQuest.VendingMachine.UseCases;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -9,12 +10,17 @@ namespace VendingMachine.Test
     [TestClass]
     public class LogoutUseCaseTests
     {
-        [TestMethod]
-        public void HavingAuthenticatedUser_WhenCheckingCanExecute_ThenReturnsTrue()
-        {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
+        private Mock<IAuthenticationService> authenticationMock;
 
+        [TestInitialize]
+        public void Setup()
+        {
+            authenticationMock = new Mock<IAuthenticationService>();
+        }
+
+        [TestMethod]
+        public void HavingAuthenticatedUser_WhenLogOut_ThenReturnsTrue()
+        {
             authenticationMock
                 .Setup(x => x.IsUserAuthenticated)
                 .Returns(true);
@@ -27,12 +33,10 @@ namespace VendingMachine.Test
 
             Assert.IsTrue(result);
         }
-        [TestMethod]
-        public void HavingNotAuthenticatedUser_WhenCheckingCanExecute_ThenReturnsFalse()
-        {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
 
+        [TestMethod]
+        public void HavingNotAuthenticatedUser_WhenLogOut_ThenReturnsFalse()
+        {
             authenticationMock
                 .Setup(x => x.IsUserAuthenticated)
                 .Returns(false);
@@ -45,12 +49,10 @@ namespace VendingMachine.Test
 
             Assert.IsFalse(result);
         }
-        [TestMethod]
-        public void HavingAuthenticatedUser_WhenExecutingLogout_ThenCallsLogoutOnce()
-        {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
 
+        [TestMethod]
+        public void HavingAuthenticatedUser_WhenLogOut_ThenCallsLogoutOnce()
+        {
             authenticationMock
                 .Setup(x => x.IsUserAuthenticated)
                 .Returns(true);
@@ -66,6 +68,7 @@ namespace VendingMachine.Test
                 Times.Once()
             );
         }
+
         [TestMethod]
         public void HavingNullAuthenticationService_WhenCreatingLogoutUseCase_ThenThrowsArgumentNullException()
         {
@@ -76,12 +79,10 @@ namespace VendingMachine.Test
                 LogoutUseCase useCase = new LogoutUseCase(authenticationService);
             });
         }
-        [TestMethod]
-        public void HavingLogoutUseCase_WhenCheckingName_ThenReturnsLogout()
-        {
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
 
+        [TestMethod]
+        public void HavingLogoutUseCase_WhenGettingName_ThenReturnsLogout()
+        {
             LogoutUseCase useCase = new LogoutUseCase(
                 authenticationMock.Object
             );
@@ -90,13 +91,10 @@ namespace VendingMachine.Test
 
             Assert.AreEqual("logout", result);
         }
-        [TestMethod]
-        public void HavingLogoutUseCase_WhenCheckingDescription_ThenReturnsCorrectDescription()
-        {
- 
-            Mock<IAuthenticationService> authenticationMock =
-                new Mock<IAuthenticationService>();
 
+        [TestMethod]
+        public void HavingLogoutUseCase_WhenGettingDescription_ThenReturnsCorrectDescription()
+        {
             LogoutUseCase useCase = new LogoutUseCase(
                 authenticationMock.Object
             );
