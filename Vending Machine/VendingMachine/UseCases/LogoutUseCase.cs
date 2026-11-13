@@ -5,7 +5,7 @@ namespace iQuest.VendingMachine.UseCases
 {
     internal class LogoutUseCase : IUseCase
     {
-        private readonly AuthenticationService authenticationService;
+        private readonly IAuthenticationService authenticationService;
 
         public string Name => "logout";
 
@@ -13,7 +13,7 @@ namespace iQuest.VendingMachine.UseCases
 
         public bool CanExecute => authenticationService.IsUserAuthenticated;
 
-        public LogoutUseCase(AuthenticationService authenticationService)
+        public LogoutUseCase(IAuthenticationService authenticationService)
         {
             this.authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
         }

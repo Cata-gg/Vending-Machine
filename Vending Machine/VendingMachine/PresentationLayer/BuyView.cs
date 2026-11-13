@@ -1,10 +1,11 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace iQuest.VendingMachine.PresentationLayer
 {
-    internal class BuyView : DisplayBase
+    internal class BuyView : DisplayBase, IBuyView
     {
         public int RequestProduct()
         {
@@ -28,6 +29,11 @@ namespace iQuest.VendingMachine.PresentationLayer
         public void DispenseProduct(string productName)
         {
             Console.WriteLine($"Dispensing {productName}...");
+        }
+
+        public void ShowError(string message)
+        {
+            Console.WriteLine(message);
         }
     }
 }

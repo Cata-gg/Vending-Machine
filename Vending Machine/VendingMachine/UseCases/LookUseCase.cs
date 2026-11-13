@@ -7,17 +7,17 @@ namespace iQuest.VendingMachine.UseCases
 {
     internal class LookUseCase : IUseCase
     {
-        private readonly ShelfView shelfView;
-        private readonly ProductRepository productRepository;
+        private readonly IShelfView shelfView;
+        private readonly IProductRepository productRepository;
 
         public string Name => "look";
         public string Description => "Display products on shelf";
         public bool CanExecute => true;
 
-        public LookUseCase(ShelfView shelfView, ProductRepository productRepository)
+        public LookUseCase(IShelfView shelfView, IProductRepository productRepository)
         {
             this.shelfView = shelfView ?? throw new ArgumentNullException(nameof(shelfView));
-            this.productRepository = productRepository ?? throw new ArgumentException(nameof(productRepository));
+            this.productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
         }
 
         public void Execute()

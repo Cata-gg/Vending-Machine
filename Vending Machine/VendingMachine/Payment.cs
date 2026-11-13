@@ -4,7 +4,7 @@ using System.Text;
 
 namespace iQuest.VendingMachine
 {
-    internal class Payment
+    internal class Payment : IPayment
     {
         public void Pay(int id, float price)
         {

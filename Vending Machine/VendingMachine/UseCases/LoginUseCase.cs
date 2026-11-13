@@ -6,8 +6,8 @@ namespace iQuest.VendingMachine.UseCases
 {
     internal class LoginUseCase : IUseCase
     {
-        private readonly AuthenticationService authenticationService;
-        private readonly LoginView loginView;
+        private readonly IAuthenticationService authenticationService;
+        private readonly ILoginView loginView;
 
         public string Name => "login";
 
@@ -15,7 +15,7 @@ namespace iQuest.VendingMachine.UseCases
 
         public bool CanExecute => !authenticationService.IsUserAuthenticated;
 
-        public LoginUseCase(AuthenticationService authenticationService, LoginView loginView)
+        public LoginUseCase(IAuthenticationService authenticationService, ILoginView loginView)
         {
             this.authenticationService = authenticationService ?? throw new ArgumentNullException(nameof(authenticationService));
             this.loginView = loginView ?? throw new ArgumentNullException(nameof(loginView));
